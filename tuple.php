@@ -131,12 +131,20 @@ class tuple{
    * @param $add_tuple
    * @return tuple
    */
-  public function add($add_tuple = '') {
+  public function add() {
+    if (! func_num_args()) {
+      throw new Exception('Invalid Arguments');
+    }
+    $params = func_get_args();
+    $add_tuple = $params[0];;
     if (get_class($add_tuple) == 'tuple') {
       $add_array = $add_tuple->_getData();
     }
-    else {
+    else if (is_array($add_tuple)){
       $add_array = $add_tuple;
+    }
+    else {
+        throw new Exception('Invalid Arguments');
     }
     $results = array_merge((array) $this->_data, (array) $add_array);
     return new tuple($results);
@@ -148,13 +156,26 @@ class tuple{
    * @param $diff_tuple
    * @return tuple
    */
-  public function diff($diff_tuple = '') {
-    if (get_class($diff_tuple) == 'tuple') {
-      $diff_array = $diff_tuple->_getData();
+  public function diff() {
+    if (! func_num_args()) {
+      throw new Exception('Invalid Arguments');
     }
-    else {
+    $params = func_get_args();
+    $diff_tuple = $params[0];;
+	if (is_array($diff_tuple)){
       $diff_array = $diff_tuple;
     }
+    else if (is_object($diff_tuple)) {
+			if (! get_class($diff_tuple) == 'tuple') {
+				throw new Exception('Invalid Arguments');
+			}
+			else {
+			  $diff_array = $diff_tuple->_getData();
+		}
+	}
+	else {
+		throw new Exception('Invalid Arguments');
+	}
     $temp_results = array_diff($this->_data,(array) $diff_array);
     // normalize results as a zero based array
     $results = array();
